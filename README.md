@@ -15,10 +15,7 @@ We're a new company, so currently we are only allowing prospective customers to 
 
 * View our selection of planes
 * Add 1 block of 10 flight hours for the selected plane to your cart
-* P
-
-You can add multiple planes to your cart, but currently we're only allowing customers to purchase
-1 block of 10 flight hours per plane.
+* Purchase your cart
 
 Note that all prices are in USD.
 

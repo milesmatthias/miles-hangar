@@ -32,16 +32,12 @@ post '/add-to-cart' do
 	# todo: validate id input field
 	# if we don't have that plane, inventory check
 
-	if session[:cart].include?(plane.id)	
-		# if it is, tell user to checkout first before buying more
-		session[:error_msg].push "You already have this in your cart. Please checkout first, then you can buy more hours of this plane."
-		redirect "/"
-	else
-		session[:cart].push(plane.id) 
-	end
+  session[:cart].push(plane.id)
 
 	# make sure total isn't over $999,999.99 (max Stripe charge amt)
 	if Plane.total_cost_cents_usd(session[:cart]) > 9999999999
+    session[:cart].pop
+
 		session[:error_msg].push "You cannot add this item to your cart, as it makes the total cost larger than we can process. Purchase your cart first, and then purchase this item."
 		redirect "/"
 	else
