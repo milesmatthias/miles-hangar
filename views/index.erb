@@ -1,0 +1,29 @@
+<h1>Welcome to Miles' Hangar</h1>
+
+<h3>Add a plane to your cart to purchase 10 flight hours in that plane!</h3>
+
+<div id="plane-gallery" style="margin-top: 5em; display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+<% @planes.each do |plane| %>
+
+  <div class="plane-item" style="flex: 1 0 33%; height: 400px;">
+
+    <h4><%= plane.name %></h4>
+    <img src="<%= plane.image_filename %>" style="max-width: 300px;" />
+
+    <% if ENV["CUBAN_MODE"].nil? %>
+    <p>For 10 flight hours, it costs <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
+    <% else %>
+    <p>To buy this plane, the down payment is $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <% end %>
+
+		<form action="/add-to-cart" method="post">
+			<input type="hidden" name="plane_id" value="<%= plane.id %>"></input>
+			<input type="submit" value="Add to cart"></input>
+		</form>
+
+  </div>
+
+<% end %>
+
+</div>

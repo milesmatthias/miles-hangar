@@ -1,0 +1,38 @@
+<html>
+
+  <head>
+    <title>Miles' Hangar</title>
+
+    <!-- TODO: stripe JS -->
+
+    <style>
+      .error {
+        color: red;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <header style="margin-bottom:2em;">
+      <div class="cart">
+        <p>You have <%= @cart.count %> items in your cart.<p>
+      </div>
+    </header>
+
+    <% unless @error_msg.nil? %>
+    <div class="error">
+      <%= @error_msg %>
+    </div>
+    <% end %>
+
+    <%= yield %>
+
+    <footer style="margin-top: 10em;">
+      <p>Copyright 2020 Miles Matthias. Questions? <a href="mailto:miles@hiremiles.com">Email miles@hiremiles.com</a> :)</p>
+    </footer>
+
+  </body>
+
+</html>

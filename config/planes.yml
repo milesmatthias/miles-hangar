@@ -1,0 +1,45 @@
+- id: 1
+  name: "Citation X"
+  charter_price_cents_usd: 6499999
+  downpayment_price_cents_usd: 99999999
+  image_filename: citationx.jpg
+- id: 2
+  name: "Gulfstream G550"
+  charter_price_cents_usd: 8499999
+  downpayment_price_cents_usd: 99999999
+  image_filename: gulfstream-g550.jpg
+- id: 3
+  name: "Boeing 737-900"
+  charter_price_cents_usd: 19999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 737-900.jpg
+- id: 4
+  name: "Boeing 747-8"
+  charter_price_cents_usd: 89999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 747-8.jpg
+- id: 5
+  name: "Boeing 777-300ER"
+  charter_price_cents_usd: 69999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 777-300er.jpg
+- id: 6
+  name: "Boeing 787-10"
+  charter_price_cents_usd: 79999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 787-10.jpg
+- id: 7
+  name: "Airbus A340-300"
+  charter_price_cents_usd: 69999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 340-300.jpg
+- id: 8
+  name: "Airbus A350-1000"
+  charter_price_cents_usd: 79999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 350-1000.jpg
+- id: 9
+  name: "Airbus A380-800"
+  charter_price_cents_usd: 99999999
+  downpayment_price_cents_usd: 99999999
+  image_filename: 380-800.jpg
