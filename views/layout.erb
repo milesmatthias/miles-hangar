@@ -10,6 +10,10 @@
         color: red;
         font-size: 18px;
       }
+      .success {
+        color: green;
+        font-size: 18px;
+      }
     </style>
   </head>
 
@@ -17,13 +21,25 @@
 
     <header style="margin-bottom:2em;">
       <div class="cart">
-        <p>You have <%= @cart.count %> items in your cart.<p>
+        <p>You have <%= session[:cart].count %> items in your cart.<p>
+        <p>Cart total: <%= Money.new(Plane.total_cost_cents_usd(session[:cart]), "USD").format %></p>
+        <a href="/checkout">
+          <button>Checkout</button>
+        </a>
       </div>
     </header>
+
+    <h1>Welcome to Miles' Hangar</h1>
 
     <% unless @error_msg.nil? %>
     <div class="error">
       <%= @error_msg %>
+    </div>
+    <% end %>
+
+    <% unless @success_msg.nil? %>
+    <div class="success">
+      <%= @success_msg %>
     </div>
     <% end %>
 

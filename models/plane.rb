@@ -5,10 +5,10 @@ class Plane
 		:downpayment_price_cents_usd, :image_filename
 
   def initialize(item)
-    @id                          = item["id"]
+    @id                          = item["id"].to_s
     @name                        = item["name"]
-    @charter_price_cents_usd     = item["charter_price_cents_usd"].to_i rescue nil
-    @downpayment_price_cents_usd = item["downpayment_price_cents_usd"].to_i rescue nil
+    @charter_price_cents_usd     = item["charter_price_cents_usd"].to_i
+    @downpayment_price_cents_usd = item["downpayment_price_cents_usd"].to_i
     @image_filename              = item["image_filename"]
   end
 
@@ -19,18 +19,18 @@ class Plane
   end
 
   def self.find_by_id(id)
-    self.all.find{|plane| plane.id == id}
+    Plane.all.find{|plane| plane.id == id}
   end
 
   def self.find_by_ids(ids)
-    self.all.select{|plane| ids.include?(plane.id)}
+    Plane.all.select{|plane| ids.include?(plane.id)}
   end
 
 	def self.total_cost_cents_usd(plane_ids)
 		if ENV["CUBAN_MODE"].nil?
-			self.find_by_ids(plane_ids).sum{|plane| plane.charter_price_cents_usd}
+			Plane.find_by_ids(plane_ids).sum{|plane| plane.charter_price_cents_usd}
 		else
-			self.find_by_ids(plane_ids).sum{|plane| plane.downpayment_price_cents_usd}
+			Plane.find_by_ids(plane_ids).sum{|plane| plane.downpayment_price_cents_usd}
 		end
 	end
 end

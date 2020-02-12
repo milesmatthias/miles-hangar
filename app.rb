@@ -10,10 +10,12 @@ enable :sessions
 # before filter to get cart
 before do
 	session[:cart] ||= []
-	@cart = session[:cart]
 
 	session[:error_msg] ||= []
 	@error_msg = session[:error_msg].pop
+
+	session[:success_msg] ||= []
+	@success_msg = session[:success_msg].pop
 end
 
 
@@ -25,26 +27,37 @@ get '/' do
 end
 
 post '/add-to-cart' do
-	if @cart.include?(params[:id])	
+	plane = Plane.find_by_id(params[:plane_id]) 
+
+	# todo: validate id input field
+	# if we don't have that plane, inventory check
+
+	if session[:cart].include?(plane.id)	
 		# if it is, tell user to checkout first before buying more
-		"You already have this in your cart."
+		session[:error_msg].push "You already have this in your cart. Please checkout first, then you can buy more hours of this plane."
+		redirect "/"
 	else
-		@cart.push(params[:id]) 
+		session[:cart].push(plane.id) 
 	end
 
-	# todo: make sure total isn't over $999,999.99 (max Stripe charge amt)
-	if Plane.total_cost_cents_usd(@cart) > 9999999999
+	# make sure total isn't over $999,999.99 (max Stripe charge amt)
+	if Plane.total_cost_cents_usd(session[:cart]) > 9999999999
 		session[:error_msg].push "You cannot add this item to your cart, as it makes the total cost larger than we can process. Purchase your cart first, and then purchase this item."
-
-		redirect "/", 400
+		redirect "/"
 	else
-		redirect "/view-cart", 200
+		session[:success_msg].push "Added the #{plane.name} to your cart."
+		redirect "/"
 	end
 end
 
-get '/view-cart' do
-	@planes = Plane.find_by_ids(@cart)
-	erb :view_cart
+get '/checkout' do
+	if session[:cart].count.zero?
+		session[:error_msg].push "You don't have anything in your cart. Add some planes!"
+		redirect "/"
+	else
+		@planes = Plane.find_by_ids(session[:cart])
+		erb :checkout
+	end
 end
 
 get '/charge-intention-secret' do
@@ -53,21 +66,20 @@ get '/charge-intention-secret' do
 end
 
 post '/checkout' do
+	puts "checking out with charge_id = #{params[:charge_id]}"
+
   # todo: ensure a charge id is present, otherwise there were unchecked errors on the client
 
-
-	# todo
-	charge_id = 1
-
   # todo: redirect to /confirm with ids of planes bought & charge id.
-	redirect "/confirm?charge_id=#{charge_id}", 200
+	redirect "/confirm?charge_id=#{params[:charge_id]}"
 end
 
 get '/confirm' do
-	@planes    = Plane.find_by_ids(@cart)
+	@planes    = Plane.find_by_ids(session[:cart])
 	@charge_id = params[:charge_id]
 
   # clear cart contents
-	# FIXME
-	@cart = []
+	session[:cart] = []
+
+	erb :confirm
 end

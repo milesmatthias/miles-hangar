@@ -1,0 +1,28 @@
+<h3>Thanks for your purchase!</h3>
+
+<p>Your charge id is <%= @charge_id %>. A member of our team will be in touch soon to coordinate your travel schedule.</p>
+
+<a href="/">Buy some more time!</a>
+
+<h4>Your order</h4>
+
+<div id="plane-gallery" style="margin-top: 1em; display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+<% @planes.each do |plane| %>
+
+  <div class="plane-item" style="flex: 1 0 33%; height: 400px;">
+
+    <h4><%= plane.name %></h4>
+    <img src="<%= plane.image_filename %>" style="max-width: 300px;" />
+
+    <% if ENV["CUBAN_MODE"].nil? %>
+    <p>You prepaid for 10 flight hours, costing <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
+    <% else %>
+    <p>You bought this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <% end %>
+
+  </div>
+
+<% end %>
+
+</div>

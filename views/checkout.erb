@@ -1,0 +1,29 @@
+<h3>Checkout your cart</h3>
+
+<div id="plane-gallery" style="margin-top: 5em; display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+<% @planes.each do |plane| %>
+
+  <div class="plane-item" style="flex: 1 0 33%; height: 400px;">
+
+    <h4><%= plane.name %></h4>
+    <img src="<%= plane.image_filename %>" style="max-width: 300px;" />
+
+    <% if ENV["CUBAN_MODE"].nil? %>
+    <p>You're prepaying for 10 flight hours, costing <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
+    <% else %>
+    <p>You're buying this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <% end %>
+
+  </div>
+
+<% end %>
+
+</div>
+
+<!-- FIXME -->
+<form action="/checkout" method="POST">
+  <!-- FIXME -->
+  <input type="hidden" name="charge_id" value="1"></input>
+  <input type="submit" value="Purchase"></input>
+</form>
