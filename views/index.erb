@@ -1,4 +1,8 @@
+<% if ENV["CUBAN_MODE"].nil? %>
 <h3>Add a plane to your cart to purchase 10 flight hours in that plane!</h3>
+<% else %>
+<h3>Add a plane to your cart to purchase that plane!</h3>
+<% end %>
 
 <div id="plane-gallery" style="margin-top: 5em; display: flex; flex-wrap: wrap; justify-content: space-between;">
 
@@ -12,7 +16,7 @@
     <% if ENV["CUBAN_MODE"].nil? %>
     <p>For 10 flight hours, it costs <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
     <% else %>
-    <p>To buy this plane, the down payment is $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <p>To buy this plane, the down payment is <%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
     <% end %>
 
 		<form action="/add-to-cart" method="POST">

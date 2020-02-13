@@ -1,14 +1,15 @@
 <h3>Thanks for your purchase!</h3>
 
-<p>Your charge id is <%= @charge_id %>. A member of our team will be in touch soon to coordinate your travel schedule.</p>
+<p>Your payment of <%= Money.new(Plane.total_cost_cents_usd_for_planes(@planes), "USD").format %> was successful and your charge ID is <%= @charge_id %>. A member of our team will be in touch soon to coordinate your travel schedule.</p>
 
-<a href="/">Buy some more time!</a>
+<a href="/">Buy some more <%= ENV["CUBAN_MODE"].nil? ? "time" : "planes" %>!</a>
 
 <h4>Your order</h4>
 
 <div id="plane-gallery" style="margin-top: 1em; display: flex; flex-wrap: wrap; justify-content: space-between;">
 
-<% @planes.each do |plane| %>
+<% @planes.group_by(&:id).each do |id, plane_group| %>
+  <% plane = plane_group.first %>
 
   <div class="plane-item" style="flex: 1 0 33%; height: 400px;">
 
@@ -16,9 +17,9 @@
     <img src="<%= plane.image_filename %>" style="max-width: 300px;" />
 
     <% if ENV["CUBAN_MODE"].nil? %>
-    <p>You prepaid for 10 flight hours, costing <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
+    <p>You prepaid for <%= 10 * plane_group.count %> flight hours, costing <%= Money.new(plane.charter_price_cents_usd * plane_group.count, "USD").format %>.</p>
     <% else %>
-    <p>You bought this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <p>You bought <%= plane_group.count %> of this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd * plane_group.count, "USD").format %>.</p>
     <% end %>
 
   </div>

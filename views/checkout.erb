@@ -2,7 +2,8 @@
 
 <div id="plane-gallery" style="margin-top: 5em; display: flex; flex-wrap: wrap; justify-content: space-between;">
 
-<% @planes.each do |plane| %>
+<% @planes.group_by(&:id).each do |id, plane_group| %>
+  <% plane = plane_group.first %>
 
   <div class="plane-item" style="flex: 1 0 33%; height: 400px;">
 
@@ -10,9 +11,9 @@
     <img src="<%= plane.image_filename %>" style="max-width: 300px;" />
 
     <% if ENV["CUBAN_MODE"].nil? %>
-    <p>You're prepaying for 10 flight hours, costing <%= Money.new(plane.charter_price_cents_usd, "USD").format %></p>
+    <p>You're prepaying for <%= 10 * plane_group.count %> flight hours, costing <%= Money.new(plane.charter_price_cents_usd * plane_group.count, "USD").format %></p>
     <% else %>
-    <p>You're buying this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
+    <p>You're buying <%= plane_group.count %> of this plane, with a down payment of <%= Money.new(plane.downpayment_price_cents_usd * plane_group.count, "USD").format %></p>
     <% end %>
 
   </div>
@@ -22,8 +23,94 @@
 </div>
 
 <!-- FIXME -->
-<form action="/checkout" method="POST">
-  <!-- FIXME -->
-  <input type="hidden" name="charge_id" value="1"></input>
-  <input type="submit" value="Purchase"></input>
+<form id="purchase-form" action="/checkout" method="POST">
+  <label for="name">
+    Your name:
+    <input id="input-name" type="text" name="name" required />
+  </label>
+
+  <label for="email">
+    Your email:
+    <input id="input-email" type="email" name="email" required />
+  </label>
+
+  <label for="phone">
+    Your phone number:
+    <input id="input-phone" type="tel" name="phone" required />
+  </label>
+
+  <label for="card-element">
+    Your credit card info:
+  </label>
+  <div id="card-element" style="max-width: 300px; margin: 20px 10px; border: grey solid 1px; padding: 5px;">
+  </div>
+
+  <div id="card-errors" class="error" role="alert"></div>
+
+  <input type="hidden" name="pi_id" id="pi_id_input" value="" />
+  <input type="submit" value="Purchase" id="purchase-btn" />
 </form>
+
+
+<script>
+  var stripe = Stripe("pk_test_CAwErEnF0BT9EEhEdoXhJ5wG");
+  var elements = stripe.elements();
+
+  var style = {
+    base: {
+      color: "#32325d",
+    }
+  };
+
+  var card = elements.create("card", { style: style });
+  card.mount("#card-element");
+
+  card.addEventListener('change', ({error}) => {
+    const displayError = document.getElementById('card-errors');
+    if (error) {
+      displayError.textContent = error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+
+  document.getElementById("purchase-btn").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    fetch('/charge-intention-secret')
+      .then((response) => {
+        return response.text();
+      }).then((clientSecret) => {
+				var email = document.getElementById("input-email").value;
+
+        stripe.confirmCardPayment(clientSecret, {
+					receipt_email: email,
+          payment_method: {
+            card: card,
+            billing_details: {
+              name: document.getElementById("input-name").value,
+              email: email,
+              phone: document.getElementById("input-phone").value
+            }
+          }
+        }).then(function(result) {
+          var displayError = document.getElementById('card-errors');
+          if (result.error) {
+            displayError.textContent = result.error.message;
+            console.log(result.error.message);
+          } else {
+            if (result.paymentIntent.status === 'succeeded') {
+              displayError.textContent = '';
+							console.log(result);
+              document.getElementById("pi_id_input").value = result.paymentIntent.id;
+              document.getElementById("purchase-form").submit();
+            } else {
+              displayError.textContent = "Hmm... not sure what happened. This has been reported to our team.";
+            }
+          }
+        });
+		});
+
+    return false;
+  });
+</script>

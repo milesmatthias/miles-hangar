@@ -23,14 +23,22 @@ class Plane
   end
 
   def self.find_by_ids(ids)
-    Plane.all.select{|plane| ids.include?(plane.id)}
+    ids.map do |id|
+      Plane.find_by_id(id.to_s)
+    end
+  end
+
+  def self.total_cost_cents_usd_for_planes(planes)
+		if ENV["CUBAN_MODE"].nil?
+			planes.sum{|plane| plane.charter_price_cents_usd}
+		else
+			planes.sum{|plane| plane.downpayment_price_cents_usd}
+		end
   end
 
 	def self.total_cost_cents_usd(plane_ids)
-		if ENV["CUBAN_MODE"].nil?
-			Plane.find_by_ids(plane_ids).sum{|plane| plane.charter_price_cents_usd}
-		else
-			Plane.find_by_ids(plane_ids).sum{|plane| plane.downpayment_price_cents_usd}
-		end
+    planes = Plane.find_by_ids(plane_ids)
+    Plane.total_cost_cents_usd_for_planes(planes)
 	end
+
 end

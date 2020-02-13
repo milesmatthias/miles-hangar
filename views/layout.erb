@@ -2,8 +2,9 @@
 
   <head>
     <title>Miles' Hangar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- TODO: stripe JS -->
+    <script src="https://js.stripe.com/v3/"></script>
 
     <style>
       .error {
@@ -14,12 +15,17 @@
         color: green;
         font-size: 18px;
       }
+
+      form > label {
+        display: block;
+        margin-bottom: 10px;
+      }
     </style>
   </head>
 
   <body>
 
-    <header style="margin-bottom:2em;">
+    <header style="margin-bottom:2em;float: right;margin-right:10%;">
       <div class="cart">
         <p>You have <%= session[:cart].count %> items in your cart.<p>
         <p>Cart total: <%= Money.new(Plane.total_cost_cents_usd(session[:cart]), "USD").format %></p>
@@ -32,20 +38,20 @@
     <h1>Welcome to Miles' Hangar</h1>
 
     <% unless @error_msg.nil? %>
-    <div class="error">
+    <div class="error" role="alert">
       <%= @error_msg %>
     </div>
     <% end %>
 
     <% unless @success_msg.nil? %>
-    <div class="success">
+    <div class="success" role="alert">
       <%= @success_msg %>
     </div>
     <% end %>
 
     <%= yield %>
 
-    <footer style="margin-top: 10em;">
+    <footer style="margin-top: 5em;">
       <p>Copyright 2020 Miles Matthias. Questions? <a href="mailto:miles@hiremiles.com">Email miles@hiremiles.com</a> :)</p>
     </footer>
 
