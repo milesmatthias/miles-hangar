@@ -3,7 +3,7 @@
 # Miles' Hangar
 
 Hey, I'm Miles. I own a bunch of planes and would love to offer them to you for charter!
-This website allows you to purchase whole plane charter flight hours in blocks of 50 hours.
+This website allows you to purchase whole plane charter flight hours in blocks of 10 hours.
 
 After you pre-pay for time on a specific plane, one of our friendly account executives will reach out
 to schedule and coordinate your travel. Happy flying!
@@ -19,14 +19,15 @@ We're a new company, so currently we are only allowing prospective customers to 
 
 Note that all prices are in USD.
 
+
 ## Running our website
 
 You'll need to ensure you have Ruby 2.6+ installed. ([See install instructions.](https://www.ruby-lang.org/en/documentation/installation/))
 
-To prepare to run our application, open a terminal, change to the directory where `app.rb` is located, and run the following:
+To prepare to run our application, open a terminal, change to the directory where you've unpacked this repository, and run the following:
 
 1. `gem install bundler`
-  * You can skip this step if you already have bundler installed for your version of Ruby)
+  * (You can skip this step if you already have bundler installed for your version of Ruby)
 1. `bundle install`
   * You'll only need to run this once.
 
@@ -39,36 +40,41 @@ Open a browser to [http://localhost:4567](http://localhost:4567) to check out ou
 
 ## Looking to buy a plane from me? Enable Mark Cuban mode!
 
-If you'd like to purchase an entire plane over our website, you can! [Mark Cuban was the first person to do this.](https://beam.land/aviation/e-commerce-how-mark-cuban-bought-a-private-jet-online-1208)
+If you'd like to purchase an entire plane over our website, you can! [Mark Cuban holds the record for largest e-commerce purchase, a $40M jet!](https://beam.land/aviation/e-commerce-how-mark-cuban-bought-a-private-jet-online-1208)
 
 In this mode, your payment will be a down-payment on the full cost of the plane, and one of our account executives will reach out to coordinate payment for the remaining balance and schedule delivery of your new plane.
+
+Run our application in Mark Cuban mode with the following command:
 
 `CUBAN_MODE=true bundle exec ruby app.rb`
 
 
-## Miles' internal notes to the hangar dev team
+## Required questions
 
-This is a great start. I'm really excited to get this in front of potential customers.
-In the future, let's make some improvements:
+> An overview of your application in 1 page or less: how does it work? What does it do? Which Stripe APIs does it use?
 
-### Usability
+See above for the user facing explanation of what this app does & how to run it. This demo uses the PaymentIntent Stripe API on the server side to create the initial PI & retrieve information about the completed PI. On the client, this demo uses StripeJS to add UI elements which capture & validate credit card input, and then complete the payment with the given credit card. The Stripe integration very closely follows [one of Stripe's official tutorials](https://stripe.com/docs/payments/accept-a-payment).
 
-* Currently we only support a user clicking "buy" on the purchase button, but a better UI experience would allow users to press enter while using the form as well. For brevity, we ignored that little bit of browser fun.
-* Let's make it pretty :)
+> A paragraph or two about how you approached this problem.
 
-### Payments
+Before I spent any time coding, I first spent a little time browsing the Sinatra & Stripe docs to get myself up-to-date on the APIs available. This allowed me to form the architecture & routes needed in my head. Obviously there would be routes for viewing products, adding them to a cart, checking out with a credit card payment, and viewing a receipt. Re-reading the Stripe docs to understand the payment flow was really important to understand any changes needed to be made to the typical e-commerce architecture. This is a demo, so I kept the architecture as simple as possible, skipping things like a CSS or JS framework or interacting with a database for data persistence.
 
-* Credit cards are quick to get up and running with, but let's more cost-effective payment options like ACH.
-* Some customers may want to use a credit card for CC points, but when we offer more payment options, let's ask them to split the merchant fee with us. (Or possibly pay it all)
-* Ideally we'd allow customers to purchase planes on our site too, but for such large transactions, not only we should only allow ACH, but we'll need to think about quite a few things:
-  * Coordinating with our payment provider to get their thoughts since their maximum charge amount is $999,999.99 (support for increase? recommend multiple charges? how often?)
-  * Evaluate multi-step purchases on a schedule via invoicing, allowing for smaller purchases but time to collect KYC information and possibly notify the customer's bank of such a large transaction
-  * If we can do things in one charge, we may need to partner with an escrow service to make customers feel safer sending such a large payment.
+When I sat down to code this, I wrote the README first, clarifying to myself (and to the future reader) what the goal of this demo was and what it would do. Then I incrementally worked on each component of the system in small, manually testable commits, building upon each until I was satisfied with the finished product. The general order of these components was:
 
-### Technical notes
+1. Stubbing out my routes/pages
+1. Loading & presenting my sample data
+1. Adding session state for a cart
+1. Stubbing out the purchase flow without an actual payment
+1. Adding a payment to the checkout flow
 
-* We should store client & payment information in a database for us to reference later
-  * So customer service can lookup information about a client or charge
-  * We can track state of payments in case of refunds, chargebacks, payments to outstanding balances, etc.
-  * We can track state of flight hour redemption per plane
-* We currently stuff everything into a session cookie, but as we grow & users add more and more to their session/cart, it will create large network payloads, so let's use a session store. Also ensure that session store can be shared across multiple instances of our application at some point.
+> A paragraph about why you picked the language/framework you did.
+
+Ruby is my favorite language, and most of my experience working with Stripe is in Rails. It's been a while since I've used Sinatra, so I actually enjoyed the fact that it was recommended and getting reacquainted with it.
+
+> A paragraph or two about how you might extend this if you were building a more robust instance of the same application.
+
+This demo is more of a webform than it is an application that manages state. There are several technical improvements that could be made (add a session store instead of stuffing the cart into a cookie, support the enter button on the checkout form, better error handling, etc.), but the biggest extension to be made here is adding persistent state.
+
+For example, there is no concept of a "signed in" user, because we don't have a place to store user registrations. With a database for state storage, we could allow users to view past purchases, view order status, ask for refunds, etc. Data persistence would also enable our company's administration team to view orders and manipulate their state (ex: issue refunds, mark them as fulfilled, add related travel trip records for a user's flight hour balance for a plane, etc.). Data persistence and a Stripe Connect integration could also allow our business to let other plane owners offer their planes on our platform for sale, allowing us to take a financial share of those transactions.
+
+Lastly, there is the purely financial concern to consider here for the business. Credit card fees will be very large for these large purchases, so using ACH where the fee is capped at $5 is really the direction to go. This business may also need to look into breaking up larger payments into small, scheduled payments to allow customers financial flexibility, but also to give the business time to address any KYC or regulatory concerns. Some customers may even want an escrow service, especially if they're buying a plane from us and want to make sure we deliver the plane before completely letting go of millions of dollars.
