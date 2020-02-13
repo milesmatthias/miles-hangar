@@ -36,6 +36,7 @@ You are now ready to run our application, so simply run:
 `bundle exec ruby app.rb`
 
 Open a browser to [http://localhost:4567](http://localhost:4567) to check out our awesome site!
+(This application was mainly tested in the latest Chrome on OS X, so if you have any rendering issues, try the latest Chrome browser.)
 
 
 ## Looking to buy a plane from me? Enable Mark Cuban mode!
