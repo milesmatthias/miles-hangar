@@ -20,12 +20,22 @@
         display: block;
         margin-bottom: 10px;
       }
+
+      header {
+        margin-bottom:2em;
+        float: right;
+        margin-right:10%;
+      }
+
+      footer {
+        margin-top: 5em;
+      }
     </style>
   </head>
 
   <body>
 
-    <header style="margin-bottom:2em;float: right;margin-right:10%;">
+    <header>
       <div class="cart">
         <p>You have <%= session[:cart].count %> items in your cart.<p>
         <p>Cart total: <%= Money.new(Plane.total_cost_cents_usd(session[:cart]), "USD").format %></p>
@@ -51,7 +61,7 @@
 
     <%= yield %>
 
-    <footer style="margin-top: 5em;">
+    <footer>
       <p>Copyright 2020 Miles Matthias. Questions? <a href="mailto:miles@hiremiles.com">Email miles@hiremiles.com</a> :)</p>
     </footer>
 

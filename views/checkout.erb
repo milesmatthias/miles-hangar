@@ -22,7 +22,6 @@
 
 </div>
 
-<!-- FIXME -->
 <form id="purchase-form" action="/checkout" method="POST">
   <label for="name">
     Your name:
@@ -53,7 +52,8 @@
 
 
 <script>
-  var stripe = Stripe("pk_test_CAwErEnF0BT9EEhEdoXhJ5wG");
+// Initialize Stripe & card element UI
+  var stripe   = Stripe("pk_test_CAwErEnF0BT9EEhEdoXhJ5wG");
   var elements = stripe.elements();
 
   var style = {
@@ -65,6 +65,7 @@
   var card = elements.create("card", { style: style });
   card.mount("#card-element");
 
+// Make sure we show any errors from the card element
   card.addEventListener('change', ({error}) => {
     const displayError = document.getElementById('card-errors');
     if (error) {
@@ -74,17 +75,19 @@
     }
   });
 
-  document.getElementById("purchase-btn").addEventListener("click", function(e) {
+// Purchase form submit handling
+  document.getElementById("purchase-form").addEventListener("submit", function(e) {
     e.preventDefault();
 
+    // should have a fallback for older browsers
     fetch('/charge-intention-secret')
       .then((response) => {
         return response.text();
       }).then((clientSecret) => {
-				var email = document.getElementById("input-email").value;
+        var email = document.getElementById("input-email").value;
 
         stripe.confirmCardPayment(clientSecret, {
-					receipt_email: email,
+          receipt_email: email,
           payment_method: {
             card: card,
             billing_details: {
@@ -93,23 +96,24 @@
               phone: document.getElementById("input-phone").value
             }
           }
-        }).then(function(result) {
-          var displayError = document.getElementById('card-errors');
-          if (result.error) {
-            displayError.textContent = result.error.message;
-            console.log(result.error.message);
+      }).then(function(result) {
+        var displayError = document.getElementById('card-errors');
+
+        if (result.error) {
+          displayError.textContent = result.error.message;
+          console.log(result.error.message);
+        } else {
+          if (result.paymentIntent.status === 'succeeded') {
+            displayError.textContent = '';
+            console.log(result);
+            document.getElementById("pi_id_input").value = result.paymentIntent.id;
+            document.getElementById("purchase-form").submit();
           } else {
-            if (result.paymentIntent.status === 'succeeded') {
-              displayError.textContent = '';
-							console.log(result);
-              document.getElementById("pi_id_input").value = result.paymentIntent.id;
-              document.getElementById("purchase-form").submit();
-            } else {
-              displayError.textContent = "Hmm... not sure what happened. This has been reported to our team.";
-            }
+            displayError.textContent = "Hmm... not sure what happened. This has been reported to our team.";
           }
-        });
-		});
+        }
+      });
+    });
 
     return false;
   });

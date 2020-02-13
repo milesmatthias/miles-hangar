@@ -19,7 +19,7 @@
     <% if ENV["CUBAN_MODE"].nil? %>
     <p>You prepaid for <%= 10 * plane_group.count %> flight hours, costing <%= Money.new(plane.charter_price_cents_usd * plane_group.count, "USD").format %>.</p>
     <% else %>
-    <p>You bought <%= plane_group.count %> of this plane, with a down payment of $<%= Money.new(plane.downpayment_price_cents_usd * plane_group.count, "USD").format %>.</p>
+    <p>You bought <%= plane_group.count %> of this plane, with a down payment of <%= Money.new(plane.downpayment_price_cents_usd * plane_group.count, "USD").format %>.</p>
     <% end %>
 
   </div>

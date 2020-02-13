@@ -19,10 +19,10 @@
     <p>To buy this plane, the down payment is <%= Money.new(plane.downpayment_price_cents_usd, "USD").format %></p>
     <% end %>
 
-		<form action="/add-to-cart" method="POST">
-			<input type="hidden" name="plane_id" value="<%= plane.id %>"></input>
-			<input type="submit" value="Add to cart"></input>
-		</form>
+    <form action="/add-to-cart" method="POST">
+      <input type="hidden" name="plane_id" value="<%= plane.id %>"></input>
+      <input type="submit" value="Add to cart"></input>
+    </form>
 
   </div>
 
