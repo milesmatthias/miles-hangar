@@ -28,7 +28,7 @@ To prepare to run our application, open a terminal, change to the directory wher
 
 1. `gem install bundler`
   * (You can skip this step if you already have bundler installed for your version of Ruby)
-1. `bundle install`
+2. `bundle install`
   * You'll only need to run this once.
 
 You are now ready to run our application, so simply run:
