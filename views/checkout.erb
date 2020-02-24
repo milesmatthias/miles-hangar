@@ -83,7 +83,8 @@
     fetch('/charge-intention-secret')
       .then((response) => {
         return response.text();
-      }).then((clientSecret) => {
+      })
+      .then((clientSecret) => {
         var email = document.getElementById("input-email").value;
 
         stripe.confirmCardPayment(clientSecret, {
@@ -96,24 +97,24 @@
               phone: document.getElementById("input-phone").value
             }
           }
-      }).then(function(result) {
-        var displayError = document.getElementById('card-errors');
+        }).then(function(result) {
+          var displayError = document.getElementById('card-errors');
 
-        if (result.error) {
-          displayError.textContent = result.error.message;
-          console.log(result.error.message);
-        } else {
-          if (result.paymentIntent.status === 'succeeded') {
-            displayError.textContent = '';
-            console.log(result);
-            document.getElementById("pi_id_input").value = result.paymentIntent.id;
-            document.getElementById("purchase-form").submit();
+          if (result.error) {
+            displayError.textContent = result.error.message;
+            console.log(result.error.message);
           } else {
-            displayError.textContent = "Hmm... not sure what happened. This has been reported to our team.";
+            if (result.paymentIntent.status === 'succeeded') {
+              displayError.textContent = '';
+              console.log(result);
+              document.getElementById("pi_id_input").value = result.paymentIntent.id;
+              document.getElementById("purchase-form").submit();
+            } else {
+              displayError.textContent = "Hmm... not sure what happened. This has been reported to our team.";
+            }
           }
-        }
+        });
       });
-    });
 
     return false;
   });
