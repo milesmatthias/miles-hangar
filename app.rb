@@ -120,8 +120,8 @@ end
 #####################
 get '/confirm' do
   # show the user what they bought
-  @planes               = Plane.find_by_ids(session[:cart])
-  @charge_id            = params[:charge_id]
+  @planes    = Plane.find_by_ids(session[:cart])
+  @charge_id = params[:charge_id]
 
   # clear cart contents
   session[:cart] = []
