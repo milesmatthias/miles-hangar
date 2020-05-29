@@ -23,3 +23,7 @@ ifeq ($(HEROKU),)
 else
 	heroku open -a $(HEROKU)
 endif
+
+remove:
+	git remote rm heroku
+	rm .heroku
